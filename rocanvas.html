@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>RoCanvas HTML 5 Drawing Component</title>
+</head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="rocanvas.css" type="text/css" />
+<body>
+<!--[if IE]>
+<p style="font-weight:bold;color:red;">Sorry, your browser doesn't support canvas. Please download a modern browser like <a href="http://www.mozilla.com/en-US/firefox/new/">Firefox</a>, <a href="http://www.google.com/chrome/">Chrome</a>, <a href="http://www.opera.com/">Opera</a> or <a href="http://www.apple.com/safari/">Safari</a>.</p>
+<![endif]-->
+
+<!--[if ! IE]><!-->
+<canvas id="RoCanvas" width="550" height="450" style="border:1pt solid black;margin:auto;cursor:crosshair;clear:both;">
+</canvas>
+
+<div style="clear:both;">&nbsp;</div>
+
+<div style="float:left;">Colors:</div> <a href="#" class="colorPicker" onclick="setColor('#FFF');return false;" style="background:#FFF;">&nbsp;</a>
+<a class="colorPicker" href="#" onclick="setColor('#000');return false;" style="background:#000;">&nbsp;</a>
+<a class="colorPicker" href="#" onclick="setColor('#FF0000');return false;" style="background:#FF0000;">&nbsp;</a>
+<a class="colorPicker" href="#" onclick="setColor('#00FF00');return false;" style="background:#00FF00;">&nbsp;</a>
+<a class="colorPicker" href="#" onclick="setColor('#0000FF');return false;" style="background:#0000FF;">&nbsp;</a>
+<a class="colorPicker" href="#" onclick="setColor('#FFFF00');return false;" style="background:#FFFF00;">&nbsp;</a>
+<a class="colorPicker" href="#" onclick="setColor('#00FFFF');return false;" style="background:#00FFFF;">&nbsp;</a>
+
+<div style="clear:both;">&nbsp;</div>
+
+<div style="float:left;">Sizes:</div> 
+<a href="#" class="colorPicker" onclick="setSize(2);return false;" style="width:2px;height:2px;margin-left:15px;">&nbsp;</a>
+<a href="#" class="colorPicker" onclick="setSize(5);return false;" style="width:5px;height:5px;margin-left:15px;">&nbsp;</a>
+<a href="#" class="colorPicker" onclick="setSize(10);return false;" style="width:10px;height:10px;margin-left:15px;">&nbsp;</a>
+<a href="#" class="colorPicker" onclick="setSize(25);return false;" style="width:25px;height:25px;margin-left:15px;">&nbsp;</a>
+
+<div style="clear:both;">&nbsp;</div>
+
+<p style="clear:both;"><input type="button" value="Clear Canvas" onclick="clearCanvas();">
+<input type="button" value="Save My Drawing" onclick="centerElt('RoSave',400,300);"></p>
+
+<div id="RoSave" class="ajax form" style="width:400px;">
+    <form method="post">   
+    <fieldset>
+        <legend>Drawing information:</legend>
+        <div><label>Picture title:</label> <input type="text" name="title" size="30" /></div>
+        <div><label>Your name or nickname:</label> <input type="text" name="author" size="30" /></div>       
+    </fieldset>
+    <p align="center">
+    <input type="button" value="Save my drawing!" onclick="RoSave(this.form);">
+    <input type="button" value="Cancel" onclick="$('#RoSave').hide('slow');">
+    </p>
+    </form>
+</div>
+
+<!--<![endif]-->
+
+<!--[if ! IE]><!-->
+<script src="rocanvas.js" type="text/javascript"></script>
+<!--<![endif]-->
+
+</body>
+</html>
