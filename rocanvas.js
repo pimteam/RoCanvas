@@ -1,12 +1,17 @@
 /* some JS code inspired/used from http://www.williammalone.com/articles/create-html5-canvas-javascript-drawing-app/ */
 
+var roCanvas={};
 var clickX = new Array();
 var clickY = new Array();
+roCanvas['startX'] = 0;
+roCanvas['startY'] = 0;
+roCanvas['clearRect']=[0,0,0,0]; 	
 var clickDrag = new Array();
 var paint;
 var defaultColor="#000";
 var defaultShape="round";
 var defaultWidth=5;
+var drawTool="path";
 
 var canvas = document.getElementById('RoCanvas');
 // Check the element is in the DOM and the browser supports canvas
@@ -23,16 +28,47 @@ if(canvas.getContext)
 
 $('#RoCanvas').mousedown(function(e){
   var mouseX = e.pageX - this.offsetLeft;
+  roCanvas['startX']=mouseX;
   var mouseY = e.pageY - this.offsetTop;
+  roCanvas['startY']=mouseY;
 		
-  paint = true;
-  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-  redraw();
+  paint = true;	
+  if(drawTool=='path')
+  {
+	addClick(mouseX, mouseY);
+	redraw();
+  }
 });
 
 $('#RoCanvas').mousemove(function(e){
-  if(paint){
-    addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+    if(paint){
+	// clear any rectangles that should be cleared
+    context.clearRect(roCanvas['clearRect'][0],roCanvas['clearRect'][1],
+		roCanvas['clearRect'][2],roCanvas['clearRect'][3]);
+		
+	// draw different shapes
+	switch(drawTool)
+	{
+		case 'rectangle':		
+		case 'filledrectangle':		
+			w = e.pageX - this.offsetLeft - roCanvas['startX'];
+			h = e.pageY - this.offsetTop - roCanvas['startY'];			
+			roCanvas['clearRect']=[roCanvas['startX'], roCanvas['startY'], w, h];
+			
+			if(drawTool=='rectangle')
+			{
+				context.strokeRect(roCanvas['startX'], roCanvas['startY'], w, h);			
+			}
+			else
+			{				
+				context.fillRect(roCanvas['startX'], roCanvas['startY'], w, h);			
+			}
+		break;
+		default:
+			addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+		break;
+	}
+    
     redraw();
   }
 });
@@ -43,6 +79,7 @@ $('#RoCanvas').mouseup(function(e){
   clickX = new Array();
   clickY = new Array();
   clickDrag = new Array();
+  roCanvas['clearRect']=[0,0,0,0]; 	
 });
 
 $('#RoCanvas').mouseleave(function(e){
@@ -86,6 +123,7 @@ function clearCanvas()
 function setColor(col)
 {
     context.strokeStyle = col;
+	context.fillStyle = col;
 }
 
 function setSize(px)
@@ -93,18 +131,24 @@ function setSize(px)
     context.lineWidth=px;
 }
 
+// sets the tool to draw
+function setTool(tool)
+{
+	drawTool=tool;	
+}
+
 function RoSave(frm)
 {    
     var strImageData = canvas.toDataURL();  
         
     $.ajax({
-        url: "#", // TBD
+        url: "#", // place your Ajax URL here
         type: "post",
         data: "image_data="+encodeURIComponent(strImageData)+"&title="+frm.title.value
             +"&author="+frm.author.value,
         success: function(msg)
         {
-           // TBD
+           // on success output some message or redirect etc
         }
     });
 }
