@@ -9,6 +9,7 @@ roCanvas['clearRect']=[0,0,0,0];
 var clickDrag = new Array();
 var paint;
 var defaultColor="#000";
+roCanvas['color']=defaultColor;
 var defaultShape="round";
 var defaultWidth=5;
 var drawTool="path";
@@ -45,6 +46,17 @@ $('#RoCanvas').mousemove(function(e){
 	// clear any rectangles that should be cleared
     context.clearRect(roCanvas['clearRect'][0],roCanvas['clearRect'][1],
 		roCanvas['clearRect'][2],roCanvas['clearRect'][3]);
+    
+    // clear any circles that have to be cleared
+    // set color to white but remember old color
+    context.strokeStyle=context.fillStyle='#ffffff';
+    console.log(roCanvas['color']);
+    context.beginPath();
+    context.arc(roCanvas['clearCircle'][0],roCanvas['clearCircle'][1],roCanvas['clearCircle'][2],0,Math.PI*2);
+    context.closePath();
+    context.stroke();
+    context.fill();   
+    setColor(roCanvas['color']);
 		
 	// draw different shapes
 	switch(drawTool)
@@ -64,6 +76,22 @@ $('#RoCanvas').mousemove(function(e){
 				context.fillRect(roCanvas['startX'], roCanvas['startY'], w, h);			
 			}
 		break;
+        case 'circle':
+        case 'filledcircle':
+            w = Math.abs(e.pageX - this.offsetLeft - roCanvas['startX']);
+            h = Math.abs(e.pageY - this.offsetTop - roCanvas['startY']);   
+            // r is the bigger of h and w
+            r = h>w?h:w;
+            
+            roCanvas['clearCircle']=[roCanvas['startX'], roCanvas['startY'], r];
+            
+            context.beginPath();
+            context.arc(roCanvas['startX'],roCanvas['startY'],r,0,Math.PI*2);
+            context.closePath();
+            
+            if(drawTool=='circle') context.stroke();            
+            else context.fill();
+        break;
 		default:
 			addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
 		break;
@@ -79,7 +107,8 @@ $('#RoCanvas').mouseup(function(e){
   clickX = new Array();
   clickY = new Array();
   clickDrag = new Array();
-  roCanvas['clearRect']=[0,0,0,0]; 	
+  roCanvas['clearRect']=[0,0,0,0];
+  roCanvas['clearCircle']=[0,0,0]; 	 	
 });
 
 $('#RoCanvas').mouseleave(function(e){
@@ -112,18 +141,23 @@ function redraw(){
 
 function clearCanvas()
 {
+	oldLineWidth=context.lineWidth;	
 	context.clearRect(0,0,canvas.width,canvas.height);
-    canvas.width = canvas.width;
+   canvas.width = canvas.width;
     
-    clickX = new Array();
-    clickY = new Array();
-    clickDrag = new Array();
+   clickX = new Array();
+   clickY = new Array();
+   clickDrag = new Array();
+   setSize(oldLineWidth);
+   context.lineJoin = defaultShape;
+   setColor(roCanvas['color']);
 }
 
 function setColor(col)
 {
     context.strokeStyle = col;
 	context.fillStyle = col;
+	roCanvas['color']=col;
 }
 
 function setSize(px)
