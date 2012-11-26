@@ -1,4 +1,4 @@
-.colorPicker
+.roCanvasColorPicker
 {
     border:1px solid black;    
     text-decoration:none;
@@ -7,22 +7,4 @@
     width:25px;
     height:25px;
     margin-left:3px;
-}
-
-.ajax
-{
-	display:none;
-	position:absolute;
-	border:2pt solid black;
-	background:#fafafa;
-	padding:15px;
-    float:left;
-    overflow:auto;
-}
-
-.form label 
-{
-	width:150px;
-	float:left;
-	display:block;
 }
