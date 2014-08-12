@@ -443,7 +443,7 @@ var RoCanvas= function () {
 		var scripts = document.getElementsByTagName('script');
 		for(i=0; i<scripts.length;i++)
 		{
-			if(scripts[i].src && scripts[i].src.indexOf("rocanvas.js">0))
+			if(scripts[i].src && scripts[i].src.indexOf("rocanvas.js")>0)
 			{
 				path=scripts[i].src;
 			}
