@@ -155,6 +155,119 @@ var RoCanvas= function () {
 			 self.context.lineWidth = self.lineWidth;	
 		}
 		
+		/* declare touch actions */
+		
+		var touchX,touchY;
+		
+		self.canvas.addEventListener('touchstart', function(e){			
+			getTouchPos(e);
+			
+			self.startX=touchX;
+			self.startY=touchY;
+				
+			self.paint = true;	
+		  
+			if(self.drawTool=='path')
+			{
+				self.addClick(touchX, touchY);
+				self.redraw();
+			}
+			
+			event.preventDefault();
+		}, false);
+		
+		self.canvas.addEventListener('touchmove', function(e){
+			getTouchPos(e);
+			
+			self.startX=touchX;
+			self.startY=touchY;
+			
+			if(self.paint)
+		    {		    	
+				 // clear any rectangles that should be cleared
+			    self.context.clearRect(self.clearRect[0],self.clearRect[1],
+					 self.clearRect[2],self.clearRect[3]);			    
+			    // clear any circles that have to be cleared
+			    // set color to white but remember old color
+			    self.context.strokeStyle=self.context.fillStyle='#ffffff';		    
+			    self.context.beginPath();
+			    self.context.arc(self.clearCircle[0],self.clearCircle[1],self.clearCircle[2],0,Math.PI*2);
+			    self.context.closePath();
+			    self.context.stroke();
+			    self.context.fill();   
+			    self.setColor(self.color);
+					
+				// draw different shapes				
+				switch(self.drawTool)
+				{
+					case 'rectangle':		
+					case 'filledrectangle':		
+						w = e.pageX - touchX - self.startX;
+						h = e.pageY - touchY - self.startY;
+												
+						// insert postions for clearing			
+						self.clearRect=[self.startX, self.startY, w, h];
+						
+						if(self.drawTool=='rectangle')
+						{
+							self.context.strokeRect(self.startX, self.startY, w, h);			
+						}
+						else
+						{				
+							self.context.fillRect(self.startX, self.startY, w, h);			
+						}
+					break;
+			        case 'circle':
+			        case 'filledcircle':
+			            w = Math.abs(e.pageX - touchX - self.startX);
+			            h = Math.abs(e.pageY - touchY - self.startY);
+			               
+			            // r is the bigger of h and w
+			            r = h>w?h:w;
+			            
+			            // remember to clear it								            
+			            self.clearCircle=[self.startX, self.startY, r];
+			            
+			            self.context.beginPath();
+			            // draw from the center
+			            self.context.arc(self.startX,self.startY,r,0,Math.PI*2);
+			            self.context.closePath();
+			            
+			            if(self.drawTool=='circle') 
+			            {
+			            	// fill with white, then stroke
+			            	var oldColor=self.color;			            	
+			            	self.setColor("#FFFFFF");
+			            	self.context.fill();
+			            	
+			            	self.setColor(oldColor);
+			            	self.context.stroke();
+			            }            
+			            else self.context.fill();
+			        break;
+					default:
+						self.addClick(e.pageX - document.getElementById(id).offsetLeft, e.pageY - document.getElementById(id).offsetTop, true);
+					break;
+				}
+		    
+				self.redraw();
+			
+				event.preventDefault();
+			}
+		},false);
+		
+		function getTouchPos(e) {
+			if (!e)
+				var e = event;
+
+			if (e.touches) {
+				if (e.touches.length == 1) { // Only deal with one finger
+					var touch = e.touches[0]; // Get the information for finger #1
+					touchX=touch.pageX-touch.target.offsetLeft;
+					touchY=touch.pageY-touch.target.offsetTop;
+				}
+			}
+		}
 		
 		/* declare mouse actions */
 		
@@ -330,7 +443,7 @@ var RoCanvas= function () {
 		var scripts = document.getElementsByTagName('script');
 		for(i=0; i<scripts.length;i++)
 		{
-			if(scripts[i].src && scripts[i].src.indexOf("rocanvas.js">0))
+			if(scripts[i].src && scripts[i].src.indexOf("rocanvas.js")>0)
 			{
 				path=scripts[i].src;
 			}
